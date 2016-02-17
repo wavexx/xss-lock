@@ -117,7 +117,7 @@ Examples
 
 - Run **xlock** after ten minutes of inactivity::
 
-    xset 600
+    xset s 600
     xss-lock xlock +resetsaver
 
   Without ``+resetsaver``, **xlock** forces a screen saver reset during
@@ -126,7 +126,7 @@ Examples
 - Dim the screen after three minutes of inactivity, lock the screen two minutes
   later using **i3lock**::
 
-    xset 180 120
+    xset s 180 120
     xss-lock -n dim-screen.sh -- i3lock -n
 
   .. note::
