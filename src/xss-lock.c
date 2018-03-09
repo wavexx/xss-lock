@@ -524,10 +524,10 @@ main(int argc, char *argv[])
     g_unix_signal_add(SIGHUP,  (GSourceFunc)exit_service, loop);
 
     default_screen = xcb_aux_get_screen(connection, default_screen_number);
-		if (!opt_ignore_xss) {
-			if (!register_screensaver(connection, default_screen, &atom, &error))
-				goto init_error;
-		}
+    if (!opt_ignore_xss) {
+        if (!register_screensaver(connection, default_screen, &atom, &error))
+            goto init_error;
+    }
 
     g_main_loop_run(loop);
 
