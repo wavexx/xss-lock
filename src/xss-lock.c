@@ -61,6 +61,7 @@ static Child locker = {"locker", NULL, 0, FALSE, &notifier};
 static gboolean opt_quiet = FALSE;
 static gboolean opt_verbose = FALSE;
 static gboolean opt_ignore_sleep = FALSE;
+static gboolean opt_ignore_xss = FALSE;
 static gboolean opt_print_version = FALSE;
 
 static GOptionEntry opt_entries[] = {
@@ -68,6 +69,7 @@ static GOptionEntry opt_entries[] = {
     {"notifier", 'n', G_OPTION_FLAG_FILENAME, G_OPTION_ARG_CALLBACK, parse_notifier_cmd, "Send notification using CMD", "CMD"},
     {"transfer-sleep-lock", 'l', 0, G_OPTION_ARG_NONE, &locker.transfer_sleep_lock_fd, "Pass sleep delay lock file descriptor to locker", NULL},
     {"ignore-sleep", 0, 0, G_OPTION_ARG_NONE, &opt_ignore_sleep, "Do not lock on suspend/hibernate", NULL},
+    {"ignore-xss", 0, 0, G_OPTION_ARG_NONE, &opt_ignore_xss, "Do not lock on X screen saver events", NULL},
     {"quiet", 'q', 0, G_OPTION_ARG_NONE, &opt_quiet, "Output only fatal errors", NULL},
     {"verbose", 'v', 0, G_OPTION_ARG_NONE, &opt_verbose, "Output more messages", NULL},
     {"version", 0, 0, G_OPTION_ARG_NONE, &opt_print_version, "Print version number and exit", NULL},
@@ -522,12 +524,14 @@ main(int argc, char *argv[])
     g_unix_signal_add(SIGHUP,  (GSourceFunc)exit_service, loop);
 
     default_screen = xcb_aux_get_screen(connection, default_screen_number);
-    if (!register_screensaver(connection, default_screen, &atom, &error))
-        goto init_error;
+		if (!opt_ignore_xss) {
+			if (!register_screensaver(connection, default_screen, &atom, &error))
+				goto init_error;
+		}
 
     g_main_loop_run(loop);
 
-    unregister_screensaver(connection, default_screen, atom);
+    if (!opt_ignore_xss) unregister_screensaver(connection, default_screen, atom);
     g_main_loop_unref(loop);
     if (sleep_lock_fd >= 0) close(sleep_lock_fd);
     if (logind_manager) g_object_unref(logind_manager);
