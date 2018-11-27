@@ -38,6 +38,7 @@ static gboolean screensaver_event_cb(xcb_connection_t *connection, xcb_generic_e
 
 static void keep_sleep_lock_fd_open(gpointer user_data);
 static void start_child(Child *child);
+static void kill_child_signal(Child *child, int signal);
 static void kill_child(Child *child);
 static void child_watch_cb(GPid pid, gint status, Child *child);
 
@@ -191,7 +192,7 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
                 logind_session_set_idle_hint(TRUE);
             break;
         case XCB_SCREENSAVER_STATE_OFF:
-            kill_child(&notifier);
+            kill_child_signal(&notifier, SIGHUP);
             logind_session_set_idle_hint(FALSE);
             break;
         case XCB_SCREENSAVER_STATE_CYCLE:
@@ -246,10 +247,16 @@ out:
 }
 
 static void
+kill_child_signal(Child *child, int signal)
+{
+    if (child->pid && kill(child->pid, signal))
+        g_warning("Error sending %s to %s: %s", strsignal(signal), child->name, g_strerror(errno));
+}
+
+static void
 kill_child(Child *child)
 {
-    if (child->pid && kill(child->pid, SIGTERM))
-        g_warning("Error sending SIGTERM to %s: %s", child->name, g_strerror(errno));
+    kill_child_signal(child, SIGTERM);
 }
 
 static void
