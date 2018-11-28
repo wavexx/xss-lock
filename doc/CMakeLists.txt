@@ -13,7 +13,7 @@ else()
     message(WARNING "rst2man (docutils) not found, disabling man page generation")
 endif()
 
-install(FILES dim-screen.sh xdg-screensaver.patch
+install(FILES dim-screen.sh dim-screen2.sh xdg-screensaver.patch
               transfer-sleep-lock-i3lock.sh transfer-sleep-lock-generic-delay.sh
               xss-lock.service
         DESTINATION share/doc/${PROJECT_NAME})
