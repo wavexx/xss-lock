@@ -7,7 +7,7 @@ use external locker as X screen saver
 -------------------------------------
 
 :Author: Raymond Wagenmaker <raymondwagenmaker@gmail.com>
-:Date: May 2018
+:Date: November 2018
 :Manual section: 1
 
 Synopsis
@@ -46,13 +46,18 @@ Options
 -n cmd, --notifier=cmd
                 Run *cmd* when the screen saver activates because of user
                 inactivity. Shell-style quoting is supported. The notifier is
-                killed when X signals user activity or when the locker is
-                started. The locker is started after the first screen saver
-                cycle, as set with ``xset s TIMEOUT CYCLE``.
+                killed with the signal SIGHUP when X signals user activity or
+                with signal SIGTERM when the locker is started. The locker is
+                started after the first screen saver cycle, as set with
+                ``xset s TIMEOUT CYCLE``.
 
                 This can be used to run a countdown or (on laptops) dim the
                 screen before locking. For an example, see the script
                 *@CMAKE_INSTALL_PREFIX@/share/doc/xss-lock/dim-screen.sh*.
+
+                For an example on how to use the two different signals received
+                by the notifier command, see the script
+                *@CMAKE_INSTALL_PREFIX@/share/doc/xss-lock/dim-screen2.sh*.
 
 -l, --tranfer-sleep-lock
                 Allow the locker process to inherit the file descriptor that
