@@ -49,7 +49,9 @@ Options
                 killed with the signal SIGHUP when X signals user activity or
                 with signal SIGTERM when the locker is started. The locker is
                 started after the first screen saver cycle, as set with
-                ``xset s TIMEOUT CYCLE``.
+                ``xset s TIMEOUT CYCLE``. If the screen saver cycle time is 0,
+                the notifier is not run and the locker is started immediately
+                after timeout.
 
                 This can be used to run a countdown or (on laptops) dim the
                 screen before locking. For an example, see the script
