@@ -159,10 +159,12 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
                      const int *const xcb_screensaver_notify)
 {
     uint8_t event_type;
-    
-    if (!event)
-        g_critical("X connection lost; exiting.");
-    
+
+    if (!event) {
+        g_info("X connection lost; exiting.");
+        exit(EXIT_FAILURE);
+    }
+
     event_type = XCB_EVENT_RESPONSE_TYPE(event);
     if (event_type == 0) {
         xcb_generic_error_t *error = (xcb_generic_error_t *)event;
