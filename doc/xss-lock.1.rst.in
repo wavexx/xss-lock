@@ -73,7 +73,7 @@ Options
                 Example scripts that wrap existing lockers are available as
                 *@CMAKE_INSTALL_PREFIX@/share/doc/xss-lock/transfer-sleep-lock-\*.sh*.
 
--s, --session=ID
+-s ID, --session=ID
                 Use the session **ID** instead of the current session.
 
                 Example: *@CMAKE_INSTALL_PREFIX@/share/doc/xss-lock/xss-lock.service*.
