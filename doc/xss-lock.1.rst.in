@@ -20,8 +20,15 @@ Description
 ===========
 
 **xss-lock** hooks up your favorite locker to the MIT screen saver extension
-for X and also to systemd's login manager. The locker is executed in response
-to events from these two sources:
+for X and also to systemd's login manager.
+
+**xss-lock** should be run in your xsession either by starting it in
+your `.xsessionrc` or by other session specific means (e.g. Window
+manager configuration). Note that **xss-lock** runs in the foreground
+(i.e. doesn't fork) and therefore you may need to run it in the
+background (for example by running with `&`).
+
+The locker is executed in response to events from these two sources:
 
 - X signals when screen saver activation is forced or after a period of user
   inactivity (as set with ``xset s TIMEOUT``). In the latter case, the notifier
@@ -126,6 +133,11 @@ Notes
 
 Examples
 ========
+
+- Use with **xscreensaver** via `.xsessionrc` (hence in the background)::
+
+    xscreensaver &
+    xss-lock -- xscreensaver-command --lock &
 
 - Run **xlock** after ten minutes of inactivity::
 
