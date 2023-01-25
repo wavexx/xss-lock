@@ -4,7 +4,10 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/xss-lock -l -s ${GRAPHICAL_SESSION_ID} -- i3lock
+# You must arrange to run `systemctl --user import-environment
+# XDG_SESSION_ID` in your X environment prior to launching the user
+# session, e.g. in your `.xsessionrc` or similar.
+ExecStart=/usr/bin/xss-lock -l -s ${XDG_SESSION_ID} -- i3lock
 
 [Install]
 WantedBy=graphical-session.target
