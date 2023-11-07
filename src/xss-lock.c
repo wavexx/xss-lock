@@ -65,6 +65,7 @@ static Child locker = {"locker", NULL, 0, FALSE, &notifier};
 static gboolean opt_quiet = FALSE;
 static gboolean opt_verbose = FALSE;
 static gboolean opt_ignore_sleep = FALSE;
+static gboolean opt_ignore_xss = FALSE;
 static gboolean opt_print_version = FALSE;
 static gchar *opt_session = NULL;
 
@@ -73,6 +74,7 @@ static GOptionEntry opt_entries[] = {
     {"notifier", 'n', G_OPTION_FLAG_FILENAME, G_OPTION_ARG_CALLBACK, parse_notifier_cmd, "Send notification using CMD", "CMD"},
     {"transfer-sleep-lock", 'l', 0, G_OPTION_ARG_NONE, &locker.transfer_sleep_lock_fd, "Pass sleep delay lock file descriptor to locker", NULL},
     {"ignore-sleep", 0, 0, G_OPTION_ARG_NONE, &opt_ignore_sleep, "Do not lock on suspend/hibernate", NULL},
+    {"ignore-xss", 0, 0, G_OPTION_ARG_NONE, &opt_ignore_xss, "Do not lock on X screen saver events", NULL},
     {"quiet", 'q', 0, G_OPTION_ARG_NONE, &opt_quiet, "Output only fatal errors", NULL},
     {"verbose", 'v', 0, G_OPTION_ARG_NONE, &opt_verbose, "Output more messages", NULL},
     {"version", 0, 0, G_OPTION_ARG_NONE, &opt_print_version, "Print version number and exit", NULL},
@@ -190,8 +192,10 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
                 xcb_force_screen_saver(connection, XCB_SCREEN_SAVER_ACTIVE);
             /* skip notifier if it's not defined, screen saver is forced or if cycle time is 0 */
             else if (!notifier.cmd || xss_event->forced || get_cycle_time(connection) <= 0) {
-                start_child(&locker);
-                logind_session_set_locked_hint(TRUE);
+                if (!opt_ignore_xss) {
+                    start_child(&locker);
+                    logind_session_set_locked_hint(TRUE);
+                }
                 logind_session_set_idle_hint(TRUE);
             } else if (!locker.pid)
                 start_child(&notifier);
@@ -205,8 +209,10 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
         case XCB_SCREENSAVER_STATE_CYCLE:
             if (!locker.pid) {
                 logind_session_set_idle_hint(TRUE);
-                start_child(&locker);
-                logind_session_set_locked_hint(TRUE);
+                if (!opt_ignore_xss) {
+                    start_child(&locker);
+                    logind_session_set_locked_hint(TRUE);
+                }
             }
             break;
         }
