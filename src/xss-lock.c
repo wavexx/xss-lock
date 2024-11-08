@@ -192,8 +192,10 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
                 xcb_force_screen_saver(connection, XCB_SCREEN_SAVER_ACTIVE);
             /* skip notifier if it's not defined, screen saver is forced or if cycle time is 0 */
             else if (!notifier.cmd || xss_event->forced || get_cycle_time(connection) <= 0) {
-                start_child(&locker);
-                logind_session_set_locked_hint(TRUE);
+                if (!opt_ignore_xss) {
+                    start_child(&locker);
+                    logind_session_set_locked_hint(TRUE);
+                }
                 logind_session_set_idle_hint(TRUE);
             } else if (!locker.pid)
                 start_child(&notifier);
@@ -207,8 +209,10 @@ screensaver_event_cb(xcb_connection_t *connection, xcb_generic_event_t *event,
         case XCB_SCREENSAVER_STATE_CYCLE:
             if (!locker.pid) {
                 logind_session_set_idle_hint(TRUE);
-                start_child(&locker);
-                logind_session_set_locked_hint(TRUE);
+                if (!opt_ignore_xss) {
+                    start_child(&locker);
+                    logind_session_set_locked_hint(TRUE);
+                }
             }
             break;
         }
@@ -584,14 +588,12 @@ main(int argc, char *argv[])
     g_unix_signal_add(SIGHUP,  (GSourceFunc)exit_service, loop);
 
     default_screen = xcb_aux_get_screen(connection, default_screen_number);
-    if (!opt_ignore_xss) {
-        if (!register_screensaver(connection, default_screen, &atom, &error))
-            goto init_error;
-    }
+    if (!register_screensaver(connection, default_screen, &atom, &error))
+        goto init_error;
 
     g_main_loop_run(loop);
 
-    if (!opt_ignore_xss) unregister_screensaver(connection, default_screen, atom);
+    unregister_screensaver(connection, default_screen, atom);
     g_main_loop_unref(loop);
     if (sleep_lock_fd >= 0) close(sleep_lock_fd);
     if (logind_manager) g_object_unref(logind_manager);
