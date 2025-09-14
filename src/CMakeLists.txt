@@ -23,7 +23,7 @@ add_executable(xss-lock
     xss-lock.c
     xcb_utils.c
     xcb_utils.h
-    config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
 )
 
 target_link_libraries(xss-lock ${GLIB2_LIBRARIES} ${XCB_LIBRARIES})

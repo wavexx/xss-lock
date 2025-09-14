@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 project(xss-lock C)
 set(PROJECT_VERSION 0.3.0)
 
