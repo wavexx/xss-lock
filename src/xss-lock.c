@@ -297,9 +297,17 @@ static void
 child_watch_cb(GPid pid, gint status, Child *child)
 {
 #if GLIB_CHECK_VERSION(2, 34, 0)
+    gboolean success;
     GError *error = NULL;
 
-    if (!g_spawn_check_exit_status(status, &error)) {
+#if GLIB_CHECK_VERSION(2, 70, 0)
+    success = g_spawn_check_wait_status(status, &error);
+#else
+    // Use the old deprecated name
+    success = g_spawn_check_exit_status(status, &error);
+#endif
+
+    if (!success) {
         g_message("%s exited abnormally: %s", child->name, error->message);
         g_error_free(error);
     }
