@@ -1,3 +1,23 @@
+0.4.0
+-----
+
+First non-official release:
+
+* New option --ignore-xss to avoid locking on X screen saver events
+  (thanks to Vadim Raskhozhev and @kujub).
+
+* New option --session to support multiple concurrent login sessions
+  (thanks to Antoine Damhet)
+
+* Support different notifier signals (either SIGHUP or SIGTERM)
+  depending on inactivity timeout or locking, allowing custom scripts to
+  respond differently (thanks to Teemu Ikonen)
+
+* Do not crash (but exit gracefully) when losing connection to the X
+  server (thanks to Ian Campbell).
+
+* Typos and documentation fixes (Ian Campbell, Nathaniel Harward)
+
 0.3.0
 -----
 

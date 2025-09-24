@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(xss-lock C)
-set(PROJECT_VERSION 0.3.0)
+set(PROJECT_VERSION 0.4.0)
 
 install(FILES NEWS DESTINATION share/doc/${PROJECT_NAME})
 
